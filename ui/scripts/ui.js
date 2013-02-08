@@ -60,7 +60,7 @@ $(function() {
 	}
 
 	function fetchVerses(start, callback) {
-		$.get("http://127.0.0.1:3000?start=" + start, function(data) {
+		$.get("http://api.longestpoemintheworld.com?start=" + start, function(data) {
 			$("#total").html(data.total);
 
 			var versesHtml = '';
