@@ -1,0 +1,174 @@
+body {
+	background: #abdef5 url(../images/body-bg.png) repeat-x left top;
+	font-family: georgia, cursive;
+	cursor: default;
+}
+
+a {
+	text-decoration: none;
+}
+
+#container {
+	position: relative;
+	z-index: 2;
+	width: 986px;
+	margin: 20px auto;
+	padding-top: 170px;
+}
+
+h1 {
+	font-size: 34px;
+	font-style: italic;
+	font-weight: bold;
+	color: #736357;
+
+	position: absolute;
+	left: 80px;
+	top: 0;
+}
+
+h1 strong {
+	font-size: 100px;
+	letter-spacing: -2px;
+	display: block;
+	margin-bottom: -10px;
+}
+
+#birdie {
+	position: absolute;
+	right: 70px;
+	top: -50px;
+}
+
+#lolwhat {
+	position: absolute;
+	left: 470px;
+	top: 110px;
+	color: white;
+	font-size: 20px;
+	font-style: italic;
+	text-shadow: 1px 2px 8px #7fb5f1;
+}
+
+#lolwhat a {
+	color: white;
+	text-decoration: none;
+}
+
+#lolwhat a:hover {
+	text-decoration: underline;
+}
+
+#fork {
+	 position: absolute; 
+	 z-index: 2;
+	 top: 0; 
+	 right: 0; 
+	 border: 0;
+}
+
+#content {
+	width: 700px;
+}
+
+#verses li {
+	text-align: center;
+}
+
+#verses li a {
+	font-size: 18px;
+	font-style: italic;
+	text-decoration: none;
+	color: #534741;
+	padding: 5px 10px 5px 10px;
+	line-height: 32px;
+
+	-webkit-border-radius: 14px;
+	-moz-border-radius: 14px;
+	border-radius: 14px;
+
+	-moz-transition: all 0.5s; 
+	-webkit-transition: all 0.5s;  
+	-ms-transition: all 0.5s;  
+	-o-transition: all 0.5s;  
+	transition: all 0.5s;  
+
+}
+
+#verses li a .quote {
+	padding: 0 3px;
+	opacity: 0;
+	-moz-transition: all 0.5s; 
+	-webkit-transition: all 0.5s;  
+	-ms-transition: all 0.5s;  
+	-o-transition: all 0.5s;  
+	transition: all 0.5s;  
+}
+
+#verses li a:hover {
+	background: #fff;
+	color: black;
+	box-shadow: 0 2px 4px #7fb5f1;
+}
+
+#verses li a:hover .quote {
+	opacity: 1;
+}
+
+#more {
+	text-align: center;
+	margin-top: 18px;
+}
+
+#more a {
+	font-size: 18px;
+	font-style: italic;
+	text-decoration: none;
+	color: #534741;
+
+}
+
+#sidebar {
+	position: absolute;
+	right: 0;
+	top: 210px;
+	width: 286px;
+	font-family: helvetica, arial, sans-serif;
+	font-size: 12px;
+	color: #534741;
+}
+
+#sidebar p {
+	margin-bottom: 15px;
+}
+
+#sidebar #summary {
+	font-size: 24px;
+	font-family: Georgia, serif;
+	font-style: italic;
+}
+
+#sidebar a {
+	color: #0072bc;
+}
+
+#contact {
+	line-height: 1.3em;
+}
+
+#credits img {
+	border: 0;
+	position: relative;
+	top: 6px;
+}
+
+.cloud {
+	display: block;
+	position: absolute;
+	z-index: 1;
+	left: 0;
+}
+
+.cloud img {
+	opacity: 0;
+}

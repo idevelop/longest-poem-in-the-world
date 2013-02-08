@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>The Longest Poem in the World</title>
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" />
+		<link rel='icon' href='favicon.ico' />
+	</head>
+	<body>
+		<div id="container">
+			<h1><strong>the longest</strong> poem in the world</h1>
+
+			<img src="images/birdie.png" id="birdie" alt="" />
+
+			<span id="lolwhat">(<a href="https://github.com/idevelop/longest-poem-in-the-world">what is this?</a>)</span>
+
+			<div id="content">
+				<ul id="verses"></ul>
+				<p id="more"><a href="#more">&bull; &bull; &bull;</a></p>
+			</div>
+
+			<div id="sidebar">
+				<p id="summary">
+					<strong id="total">&bull; &bull; &bull;</strong> verses
+				</p>
+				
+				<p>thanks, <a href="http://www.twitter.com" target="_blank">twitter</a> :)</p>
+				
+				<p id="contact">for any ideas or suggestions, use <strong><a href="mailto:andreig@gmail.com">andreig@gmail.com</a></strong></p>
+				
+				<p id="linkedin"><a href="http://www.linkedin.com/in/idevelop" target="_blank" title="View my profile on LinkedIn"><img border="0" alt="idevelop on linkedin" src="images/linkedin.gif"></a></p>
+				<!--
+				<p id="facebook"><script type="text/javascript" src="http://static.ak.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US"></script><script type="text/javascript">FB.init("7a8b397c87f6e0fbbb7b59e25b7e9c43");</script><fb:fan profile_id="86830827449" stream="" connections="4" height="175" width="240"></fb:fan></p>
+				-->
+
+			</div>
+		</div>
+
+		<a href="https://github.com/idevelop/longest-poem-in-the-world" id="fork" target="_blank"><img src="images/forkme.png" alt="Fork me on GitHub"></a>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+		<script src="http://ricostacruz.com/jquery.transit/jquery.transit.min.js"></script>
+		<script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js"></script>
+		<script src="scripts/ui.js"></script>
+		<script src="scripts/analytics.js"></script>
+
+		<script type="template/hogan" id="tweetTemplate">
+			<li><a href="http://www.twitter.com/{{user}}/status/{{id}}/" title="by {{name}}" target="_blank"><em><span class="quote">&ldquo;</span>{{{text}}}<span class="quote">&rdquo;</span></em></a></li>
+		</script>
+	</body>
+</html>

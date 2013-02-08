@@ -1,0 +1,22 @@
+{
+	"name" : "longestpoem",
+	"version" : "1.0.0",
+	"description" : "Longest Poem in the World",
+	"author": {
+		"name": "Andrei Gheorghe", 
+		"email": "andreig@gmail.com",
+		"url": "http://www.idevelop.ro"
+	},
+	"homepage": "http://www.longestpoemintheworld.com",
+	"dependencies": {
+		"redis": ">=0.8.2"
+	},
+	"scripts": {
+		"install": "node install"
+	},
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/idevelop/longestpoem.git"
+	},
+	"license": "MIT"
+}
