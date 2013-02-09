@@ -71,23 +71,31 @@ $(function() {
 		return result.join(",");
 	}
 
-	function fetchVerses(start, url) {
-		url = url || "http://api.longestpoemintheworld.com?start=" + start;
+	function renderVerses(data) {
+		$("#total").html(formatVerseNumber(data.total));
 
-		$.getJSON(url, function(data) {
-			$("#total").html(formatVerseNumber(data.total));
+		var versesHtml = '';
+		for (var i = 0; i < data.verses.length; i++) {
+			versesHtml += verseTemplate.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, data.verses[i].text);
+		}
+		$("#verses").html(versesHtml);
+	}
 
-			var versesHtml = '';
-			for (var i = 0; i < data.verses.length; i++) {
-				versesHtml += verseTemplate.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, data.verses[i].text);
-			}
-			$("#verses").html(versesHtml);
+
+	function fetchVersesFromCache() {
+		$.getJSON("http://www.longestpoemintheworld.com/cache.json", renderVerses);
+	}
+
+	function fetchVerses(start) {
+		$.getJSON("http://api.longestpoemintheworld.com?start=" + start, function(data) {
+			renderVerses(data);
 			$("#more").show();
 		}).fail(function() {
 			// fallback to cache
-			if (url.indexOf("cache.json") === -1) fetchVerses(0, "http://www.longestpoemintheworld.com/cache.json");
+			fetchVersesFromCache();
 		});
 	}
+
 
 	fetchVerses(0); // starting id
 	initClouds(5); // number of clouds
