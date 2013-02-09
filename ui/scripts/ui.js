@@ -1,9 +1,8 @@
 $(function() {
-	var tweetTemplate = Hogan.compile($("#tweetTemplate").html());
 	var start = 0;
+	var verseTemplate = $("#verseTemplate").html();
 
-	function initClouds() {
-		var number = 6;
+	function initClouds(number) {
 		var minTopPosition = 40;
 		var maxTopPosition = 600;
 		var lastTopPosition = 0;
@@ -34,7 +33,7 @@ $(function() {
 
 			var transitionDuration = 20000 + Math.floor(Math.random() * 50000);
 			cloudContainer.transition({
-				x: document.width - 200,
+				x: $("body").width() - 200,
 				duration: transitionDuration,
 				easing: "linear"
 			});
@@ -65,14 +64,14 @@ $(function() {
 
 			var versesHtml = '';
 			for (var i = 0; i < data.verses.length; i++) {
-				versesHtml += tweetTemplate.render(data.verses[i]);
+				versesHtml += verseTemplate.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, data.verses[i].text);
 			}
 			$("#verses").html(versesHtml);
 		});
 	}
 
-	fetchVerses(0);
-	initClouds();
+	fetchVerses(0); // starting id
+	initClouds(5); // number of clouds
 
 	$("#more > a").click(function(e) {
 		e.preventDefault();
@@ -80,3 +79,13 @@ $(function() {
 		fetchVerses(start);
 	});
 });
+
+// http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+if (!String.prototype.format) {
+	String.prototype.format = function() {
+		var args = arguments;
+		return this.replace(/{(\d+)}/g, function(match, number) {
+			return (typeof args[number] != 'undefined') ? args[number] : match;
+		});
+	};
+}
