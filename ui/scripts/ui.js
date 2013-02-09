@@ -58,9 +58,22 @@ $(function() {
 		}
 	}
 
+	function formatVerseNumber(number) {
+		number = number.toString();
+		
+		var result = [];
+		do {
+			result.push(number.substr(-3));
+			number = number.substr(0, number.length - 3);
+		} while (number.length > 0);
+
+		result.reverse();
+		return result.join(",");
+	}
+
 	function fetchVerses(start, callback) {
 		$.get("http://api.longestpoemintheworld.com?start=" + start, function(data) {
-			$("#total").html(data.total);
+			$("#total").html(formatVerseNumber(data.total));
 
 			var versesHtml = '';
 			for (var i = 0; i < data.verses.length; i++) {
