@@ -93,7 +93,7 @@ exports.push = function(couplet) {
 	journal.info("pushing pair " + couplet[0].id_str + " " + couplet[1].id_str);
 	
 	redis.lpush("longestpoem.verses", JSON.stringify(couplet[0]), JSON.stringify(couplet[1]));
-	redis.save(function(){});
+	redis.bgsave(function(){});
 };
 
 exports.list = function(options, callback) {
