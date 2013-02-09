@@ -14,6 +14,7 @@ a {
 	width: 986px;
 	margin: 20px auto;
 	padding-top: 170px;
+	-webkit-transform: translateZ(0);
 }
 
 h1 {
