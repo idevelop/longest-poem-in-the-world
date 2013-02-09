@@ -74,7 +74,7 @@ $(function() {
 	function fetchVerses(start, url) {
 		url = url || "http://api.longestpoemintheworld.com?start=" + start;
 
-		$.get(url, function(data) {
+		$.getJSON(url, function(data) {
 			$("#total").html(formatVerseNumber(data.total));
 
 			var versesHtml = '';
@@ -85,7 +85,7 @@ $(function() {
 			$("#more").show();
 		}).fail(function() {
 			// fallback to cache
-			fetchVerses(0, "http://www.longestpoemintheworld.com/cache.json");
+			if (url.indexOf("cache.json") === -1) fetchVerses(0, "http://www.longestpoemintheworld.com/cache.json");
 		});
 	}
 
