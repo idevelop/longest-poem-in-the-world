@@ -116,6 +116,7 @@ h1 strong {
 }
 
 #more {
+	display: none;
 	text-align: center;
 	margin-top: 18px;
 }

@@ -60,7 +60,7 @@ $(function() {
 
 	function formatVerseNumber(number) {
 		number = number.toString();
-		
+
 		var result = [];
 		do {
 			result.push(number.substr(-3));
@@ -71,8 +71,10 @@ $(function() {
 		return result.join(",");
 	}
 
-	function fetchVerses(start, callback) {
-		$.get("http://api.longestpoemintheworld.com?start=" + start, function(data) {
+	function fetchVerses(start, url) {
+		url = url || "http://api.longestpoemintheworld.com?start=" + start;
+
+		$.get(url, function(data) {
 			$("#total").html(formatVerseNumber(data.total));
 
 			var versesHtml = '';
@@ -80,6 +82,10 @@ $(function() {
 				versesHtml += verseTemplate.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, data.verses[i].text);
 			}
 			$("#verses").html(versesHtml);
+			$("#more").show();
+		}).fail(function() {
+			// fallback to cache
+			fetchVerses(0, "http://www.longestpoemintheworld.com/cache.json");
 		});
 	}
 
