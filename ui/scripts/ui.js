@@ -38,7 +38,7 @@ var ui = {
 
 			var transitionDuration = 20000 + Math.floor(Math.random() * 50000);
 			cloudContainer.transition({
-				x: $("body").width() - 200,
+				left: $("body").width() - 200,
 				duration: transitionDuration,
 				easing: "linear"
 			});
@@ -53,9 +53,8 @@ var ui = {
 				opacity: 0
 			}, 1000, function() {
 				container.remove();
+				setTimeout(ui.clouds.createCloud, 3000 + Math.floor(Math.random() * 3000));
 			});
-
-			setTimeout(ui.clouds.createCloud, 3000 + Math.floor(Math.random() * 3000));
 		}
 	},
 
