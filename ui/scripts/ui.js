@@ -51,7 +51,9 @@ var ui = {
 		destroyCloud: function (cloud, container) {
 			cloud.animate({
 				opacity: 0
-			}, 1000);
+			}, 1000, function() {
+				container.remove();
+			});
 
 			setTimeout(ui.clouds.createCloud, 3000 + Math.floor(Math.random() * 3000));
 		}
