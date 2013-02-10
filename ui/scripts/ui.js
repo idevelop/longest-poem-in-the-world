@@ -62,38 +62,57 @@ var ui = {
 		init: function() {
 			ui.verses.template = $("#verseTemplate").html();
 			ui.verses.perPage = 16;
+			ui.verses.current = 0;
+			ui.verses.container = $("#verses");
 
 			// http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 			ui.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
-			ui.verses.socket = io.connect('http://www.longestpoemintheworld.com:3000');
-			ui.verses.socket.on('verses', function (data) {
-				$("#total").html(ui.verses.formatTotal(data.total));
-				ui.verses.push(data.couplet);
-			});
+			if (typeof io != "undefined") {
+				ui.verses.socket = io.connect('http://www.longestpoemintheworld.com:3000');
+				ui.verses.socket.on('verses', function (data) {
+					$("#total").html(ui.verses.formatTotal(data.total));
+					ui.verses.push(data.couplet);
+				});
+			} else {
+				// api is down
+				ui.verses.fetchCache(function() {
+					$("#total").html(ui.verses.formatTotal(data.total));
+					var verses = data.verses;
+					for (var i = 0; i < verses.length; i++) {
+						var text = (ui.isSafari) ? verses[i].text : ui.verses.stripEmoji(verses[i].text);
+						var li = $.parseHTML(ui.verses.template.format(verses[i].user, verses[i].id, verses[i].name, text));
+						$(li).appendTo(ui.verses.container).animate({
+							opacity: 1
+						}, 200);
+					}
+				});
+			}
 		},
 
-		fetchCache: function() {
-			$.getJSON("http://www.longestpoemintheworld.com/cache.json", ui.verses.render);
+		fetchCache: function(callback) {
+			$.getJSON("http://www.longestpoemintheworld.com/cache.json", callback);
 		},
 
 		push: function(verses) {
 			var versesHtml = '';
 			for (var i = 0; i < verses.length; i++) {
 				var text = (ui.isSafari) ? verses[i].text : ui.verses.stripEmoji(verses[i].text);
-				versesHtml += ui.verses.template.format(verses[i].user, verses[i].id, verses[i].name, text);
+				var li = $.parseHTML(ui.verses.template.format(verses[i].user, verses[i].id, verses[i].name, text));
+				$(li).appendTo(ui.verses.container).animate({
+					opacity: 1
+				}, 200);
 			}
 
-			if ($("#verses li").length === 0) {
-				$("#verses").html(versesHtml);
+			if (ui.verses.current < ui.verses.perPage) {
+				ui.verses.current += 2;
 			} else {
-				$("#verses").animate({
-					opacity: 0
-				}, 200, function() {
-					$("#verses").html(versesHtml);
-					$("#verses").animate({
-						opacity: 1
-					}, 200);
+				var v = ui.verses.container.find("li:not(.zombie)").slice(0, 2);
+				v.addClass("zombie").animate({
+					"opacity": 0,
+					"height": 0
+				}, 100, function() {
+					$(this).remove();
 				});
 			}
 		},

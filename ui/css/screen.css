@@ -74,10 +74,10 @@ h1 strong {
 
 #verses li {
 	text-align: center;
+	opacity: 0;
 }
 
-#verses li a,
-#more a {
+#verses li a {
 	font-size: 18px;
 	font-style: italic;
 	text-decoration: none;
@@ -107,8 +107,7 @@ h1 strong {
 	transition: all 0.5s;  
 }
 
-#verses li a:hover,
-#more a:hover {
+#verses li a:hover {
 	background: #fff;
 	color: black;
 	box-shadow: 0 2px 4px #7fb5f1;
@@ -116,21 +115,6 @@ h1 strong {
 
 #verses li a:hover .quote {
 	opacity: 1;
-}
-
-#more {
-	display: none;
-	text-align: center;
-	margin-top: 18px;
-}
-
-#more a {
-	font-size: 24px;
-	padding: 5px 15px;
-
-	-webkit-border-radius: 18px;
-	-moz-border-radius: 18px;
-	border-radius: 18px;
 }
 
 #sidebar {
