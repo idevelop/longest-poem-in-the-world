@@ -1,7 +1,6 @@
 var http = require("http");
 var https = require("https");
 var crypto = require('crypto');
-var journal = require("./journal");
 
 // read config file, containing twitter oauth data and various other preferences
 var config = require("./config").read("app");

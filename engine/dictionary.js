@@ -1,13 +1,10 @@
 var redis = require("redis").createClient();
-var journal = require("./journal");
 
 redis.on("error", function (error) {
 	if (error.toString().indexOf("ECONNREFUSED") != -1) {
 		console.log("Error: redis server offline.");
 		process.exit(1);
 	}
-
-	journal.error("redis: " + error);
 });
 
 exports.insert = function(record) {
@@ -18,8 +15,6 @@ exports.insert = function(record) {
 exports.getMultiple = function(words, callback) {
 	// takes array of words, returns array of phonetical translations for each word
 	redis.hmget("longestpoem.dictionary", words, function(error, result) {
-		if (error) return journal.error(error);
-
 		callback(result);
 	});
 };

@@ -1,6 +1,5 @@
 var redis = require("redis").createClient();
 var dictionary = require("./dictionary");
-var journal = require("./journal");
 var rhymeBacklog = {};
 
 // read config file, containing twitter oauth data and various other preferences
@@ -11,8 +10,6 @@ redis.on("error", function (error) {
 		console.log("Error: redis server offline.");
 		process.exit(1);
 	}
-
-	journal.error("redis: " + error);
 });
 
 exports.isCandidate = function(tweet, successCallback) {
@@ -81,7 +78,6 @@ exports.getRhymingVerse = function(candidate, callback) {
 
 exports.push = function(couplet) {
 	// couplet: [tweet_1, tweet_2];
-	journal.info("pushing pair " + couplet[0].id + " " + couplet[1].id);
 
 	redis.incrby("longestpoem.length", 2, function(error, total) {
 		redis.publish("longestpoem.verses", JSON.stringify({
