@@ -95,7 +95,18 @@ var ui = {
 				versesHtml += ui.verses.template.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, data.verses[i].text);
 			}
 
-			$("#verses").html(versesHtml);
+			if ($("#verses li").length === 0) {
+				$("#verses").html(versesHtml);
+			} else {
+				$("#verses").animate({
+					opacity: 0
+				}, 200, function() {
+					$("#verses").html(versesHtml);
+					$("#verses").animate({
+						opacity: 1
+					}, 200);
+				});
+			}
 		},
 
 		formatTotal: function(number) {

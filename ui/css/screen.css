@@ -76,12 +76,13 @@ h1 strong {
 	text-align: center;
 }
 
-#verses li a {
+#verses li a,
+#more a {
 	font-size: 18px;
 	font-style: italic;
 	text-decoration: none;
 	color: #534741;
-	padding: 5px 10px 5px 10px;
+	padding: 5px 10px;
 	line-height: 32px;
 
 	-webkit-border-radius: 14px;
@@ -106,7 +107,8 @@ h1 strong {
 	transition: all 0.5s;  
 }
 
-#verses li a:hover {
+#verses li a:hover,
+#more a:hover {
 	background: #fff;
 	color: black;
 	box-shadow: 0 2px 4px #7fb5f1;
@@ -123,11 +125,12 @@ h1 strong {
 }
 
 #more a {
-	font-size: 18px;
-	font-style: italic;
-	text-decoration: none;
-	color: #534741;
+	font-size: 24px;
+	padding: 5px 15px;
 
+	-webkit-border-radius: 18px;
+	-moz-border-radius: 18px;
+	border-radius: 18px;
 }
 
 #sidebar {
