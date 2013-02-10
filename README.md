@@ -5,6 +5,8 @@ Longest Poem in the World
 
 ## How it works
 
+<img src="http://www.longestpoemintheworld.com/images/birdie_github.png" align="right" />
+
 * The [Twitter Search API v1.1](https://dev.twitter.com/docs/api/1.1/get/search/tweets) is used to fetch the latest 100 tweets, twice a minute. 
 * Out of those tweets it only considers those written in proper English and with a reasonable syllable count. 
 * The [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) is used to obtain phonetical translations of the tweet. For example, `orange` has the phonetical translation `ao1 r ah0 n jh`. Tweets that rhyme have the same phonetical translation starting with the last accented phoneme. 
