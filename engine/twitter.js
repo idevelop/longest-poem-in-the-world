@@ -32,7 +32,7 @@ exports.stream = function(callback) {
 				var tweet = JSON.parse(data);
 				callback(tweet);
 			} catch (e) {
-				// TODO: parseexception handling
+				// TODO: parse exception handling
 			}
 		});
 

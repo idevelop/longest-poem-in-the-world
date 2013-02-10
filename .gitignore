@@ -2,3 +2,5 @@
 node_modules/
 *.log
 _old/
+nginx.conf
+idevelop.config
