@@ -131,7 +131,7 @@ function getRelevantPhoneme(phoneticalTranslation) {
 }
 
 function cleanUpText(text) {
-	var smileys = [":s", ":p", ":d", ":x", "xd", ":o(", ":o)", ":-s", ":-d", ":-p", ":-x", ";d", ":3", "<3"];
+	var smileys = [":s", ":p", ":d", ":x", "xd", ":o(", ":o)", ":-s", ":-d", ":-p", ":-x", ";d", ":3", "<3", "T_T"];
 	text = text.toLowerCase();
 
 	// replace html entities
