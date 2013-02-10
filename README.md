@@ -7,10 +7,9 @@ Longest Poem in the World
 
 <img src="http://www.longestpoemintheworld.com/images/birdie_github.png" align="right" />
 
-* The [Twitter Search API v1.1](https://dev.twitter.com/docs/api/1.1/get/search/tweets) is used to fetch the latest 100 tweets, twice a minute. 
-* Out of those tweets it only considers those written in proper English and with a reasonable syllable count. 
-* The [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) is used to obtain phonetical translations of the tweet. For example, `orange` has the phonetical translation `ao1 r ah0 n jh`. Tweets that rhyme have the same phonetical translation starting with the last accented phoneme. 
-* A backlog of tweet candidates is kept. For each tweet ("candidate") fetched from the public search stream, it looks in the backlog to see if it can find one that rhymes with it. If yes, it pushes both tweets into the poem's verse stream. If not, the tweet is saved in the backlog, waiting to be paired with a future candidate.
+* The [Twitter Streaming API v1.1](https://dev.twitter.com/docs/api/1.1/post/statuses/filter) is used to fetch tweets in real-time. Out of the tweets coming from the stream it only considers those written in proper English and with a reasonable syllable count. 
+* The [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) is used to obtain phonetical translations of the tweet. For example, `orange` has the phonetical translation `ao1 r ah0 n jh`. Words that rhyme have the same phonetical translation starting with the last accented phoneme. 
+* A backlog of tweet candidates is kept. For each tweet ("candidate") fetched from the stream, it looks in the backlog to see if it can find one that rhymes with it. If yes, it pushes both tweets into the poem's verse stream. If not, the tweet is saved in the backlog, waiting to be paired with a future candidate.
 * Additional improvements include: ignoring "same word" rhymes, translating numbers into plain text, ignoring smileys, etc.
 
 ## Installation
@@ -25,17 +24,18 @@ In order for the application to be able to access the Twitter Search API, you ne
 
 To start the poem generator, run `node engine`.
 
-The verse stream will be saved in a redis list, as well as being written to stdout as plain text strings.
+The verse stream is not stored anywhere, and is only published via Redis pub/sub to clients subscribed to the channel.
 
 ## API
 
-A simple, read-only API is provided in the `api` folder. It is currently used by the [application homepage](http://www.longestpoemintheworld.com) to list verses. I plan to allow outside submissions into the verse stream in the form of an API request containing a pair of tweet ids.
+A simple, read-only socket.io API is provided in the `api` folder. It is currently used by the [application homepage](http://www.longestpoemintheworld.com) to list the verses. I plan to allow outside submissions into the verse stream in the form of an API request containing a pair of tweet ids.
 
 To start the API server, run `node api`.
 
 ## Dependencies
 
 * The application requires a running Redis instance.
+* socket.io is used by the API to push the verse stream to the browser in real-time
 
 ## Author
 
