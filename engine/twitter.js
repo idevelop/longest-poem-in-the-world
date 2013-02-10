@@ -1,4 +1,5 @@
 var http = require("http");
+var https = require("https");
 var crypto = require('crypto');
 var journal = require("./journal");
 
@@ -21,7 +22,38 @@ exports.fetch = function(callback) {
 };
 
 exports.stream = function(callback) {
-	// TODO: use streaming API
+	// https://dev.twitter.com/docs/api/1.1/post/statuses/filter
+
+	var queryParams = {
+		"track": config.twitter.search_terms.join(",") // filter for common english words
+	};
+
+	var httpOptions = {
+		hostname: 'stream.twitter.com',
+		path: "/1.1/statuses/filter.json?" + serializeEncodeObject(queryParams).join("&"),
+		headers: {
+			'user-agent': 'Longest Poem In The World (v1, ' + process.pid + ')',
+			'authorization': generateAuthorizationHeader("get", "https://stream.twitter.com/1.1/statuses/filter.json", queryParams)
+		}
+	};
+
+	var request = https.request(httpOptions, function(response) {
+		response.setEncoding('utf8');
+		response.on('data', function(data) {
+			try {
+				var tweet = JSON.parse(data);
+				callback(tweet);
+			} catch (e) {
+				// TODO: parseexception handling
+			}
+		});
+
+		response.on('end', function() {
+			console.log("Twitter stream connection interrupted.");
+		});
+	});
+
+	request.end();
 };
 
 function fetchTweets(callback) {
@@ -75,6 +107,8 @@ function generateAuthorizationHeader(method, url, queryParams) {
 	// https://dev.twitter.com/docs/auth/creating-signature
 
 	var now = new Date();
+	
+	queryParams = queryParams || {};
 
 	var parameterArray = [];
 
@@ -92,6 +126,7 @@ function generateAuthorizationHeader(method, url, queryParams) {
 
 	var signatureBaseString = method.toUpperCase() + "&" + encodeURIComponent(url) + "&" + encodeURIComponent(parameterArray.join("&"));
 	var signingKey = encodeURIComponent(config.twitter.auth.consumer_secret) + "&" + encodeURIComponent(config.twitter.auth.access_token_secret);
+
 	oAuthVariables.oauth_signature = crypto.createHmac('sha1', signingKey).update(signatureBaseString).digest("base64");
 
 	var headerArray = [];
