@@ -1,6 +1,7 @@
 var redis = require("redis").createClient();
 var dictionary = require("./dictionary");
 var journal = require("./journal");
+var rhymeBacklog = {};
 
 // read config file, containing twitter oauth data and various other preferences
 var config = require("./config").read("app");
@@ -21,100 +22,82 @@ exports.isCandidate = function(tweet, successCallback) {
 	// dismiss tweets with links
 	if (tweet.text.indexOf("http://") > -1) return;
 
-	redis.sismember("longestpoem.tweets", tweet.id_str, function(error, exists) {
-		// did we already consider this tweet? duplicates could happen, you never know...
-		if (!exists) {
-			redis.sadd("longestpoem.tweets", tweet.id_str); // mark tweet as "considered", to avoid unnecessary future retesting
-			var text = cleanUpText(tweet.text);
-			var words = text.split(" ");
+	var text = cleanUpText(tweet.text);
+	var words = text.split(" ");
 
-			dictionary.getMultiple(words, function(translations) {
-				// check that all words are in the dictionary => proper english
-				for (var i = 0; i < translations.length; i++) {
-					if (translations[i] === null) return;
-				}
-
-				var rhymePhoneme = getRelevantPhoneme(translations[translations.length - 1]);
-				var syllableCount = words.map(getSyllableCount).reduce(function(a, b) { return a + b; });
-
-				// limit length of verses to a reasonable number of syllables
-				if (syllableCount > config.syllable_limit) return;
-
-				successCallback({
-					tweet: tweet,
-					rhyme: rhymePhoneme,
-					syllableCount: syllableCount,
-					lastWord: words[words.length - 1]
-				});
-			});
+	dictionary.getMultiple(words, function(translations) {
+		// check that all words are in the dictionary => proper english
+		for (var i = 0; i < translations.length; i++) {
+			if (translations[i] === null) return;
 		}
+
+		var rhymePhoneme = getRelevantPhoneme(translations[translations.length - 1]);
+		var syllableCount = words.map(getSyllableCount).reduce(function(a, b) { return a + b; });
+
+		// limit length of verses to a reasonable number of syllables
+		if (syllableCount > config.syllable_limit) return;
+
+		successCallback({
+			id: tweet.id_str,
+			text: tweet.text,
+			user: tweet.user.screen_name,
+			name: tweet.user.name,
+			rhyme: rhymePhoneme,
+			syllableCount: syllableCount,
+			lastWord: words[words.length - 1]
+		});
 	});
 };
 
-exports.getRhymingVerse = function(candidate, callback, ids) {
-	ids = ids || [];
-
+exports.getRhymingVerse = function(candidate, callback) {
 	// we keep a list for each relevant phonetical ending, coresponding directly to a rhyme
-	var listKey = "longestpoem.candidates_" + candidate.rhyme.replace(/ /g, "_");
-	redis.lpop(listKey, function(error, match) {
-		if (match !== null) {
-			var matchingObject = JSON.parse(match);
+	var listKey = candidate.rhyme.replace(/ /g, "_");
+	if (!rhymeBacklog.hasOwnProperty(listKey)) {
+		rhymeBacklog[listKey] = [candidate];
+		return;
+	}
 
-			if (ids.indexOf(matchingObject.tweet.id_str) > -1) {
-				// we have looped over the entire list, no rhyming tweets are good enough
-				redis.rpush(listKey, JSON.stringify(candidate));
-				return;
-			}
+	var backlogList = rhymeBacklog[listKey];
 
-			// do not pair verses that end in the same word, that's just lazy
-			// also, couplets should have roughtly the same number of syllables
-			if ((candidate.lastWord != matchingObject.lastWord) && (Math.abs(candidate.syllableCount - matchingObject.syllableCount) <= 4)) {
-				callback(matchingObject); // hurray!
-			} else {
-				// although they rhyme, it's not a good rhyme
+	var found = false;
+	for (var i = 0; i < backlogList.length; i++) {
+		var matchingObject = backlogList.splice(i, 1)[0];
 
-				// we push the match back into the list, at the end
-				redis.rpush(listKey, match);
-
-				// and try again on the same list of rhyming tweets, also keeping track of ids we've already seen
-				// this works because we pop from the left and push to the right of the possible matches list
-				ids.push(matchingObject.tweet.id_str);
-				exports.getRhymingVerse(candidate, callback, ids); // TODO: should we limit the number of recursion levels?
-			}
+		// do not pair verses that end in the same word, that's just lazy
+		// also, couplets should have roughtly the same number of syllables
+		if ((candidate.lastWord != matchingObject.lastWord) && (Math.abs(candidate.syllableCount - matchingObject.syllableCount) <= 4)) {
+			callback(matchingObject); // hurray!
+			found = true;
+			break;
 		} else {
-			// list is empty, candidate is first one with this rhyme
-			redis.rpush(listKey, JSON.stringify(candidate));
+			backlogList.push(matchingObject);
 		}
-	});
+	}
+
+	if (!found) {
+		backlogList.push(candidate);
+	}
 };
 
 exports.push = function(couplet) {
 	// couplet: [tweet_1, tweet_2];
-	journal.info("pushing pair " + couplet[0].id_str + " " + couplet[1].id_str);
-	
-	redis.lpush("longestpoem.verses", JSON.stringify(couplet[0]), JSON.stringify(couplet[1]));
-	redis.bgsave(function(){});
+	journal.info("pushing pair " + couplet[0].id + " " + couplet[1].id);
+
+	redis.incrby("longestpoem.length", 2, function(error, total) {
+		redis.publish("longestpoem.verses", JSON.stringify({
+			total: total,
+			couplet: couplet
+		}));
+	});
 };
 
-exports.list = function(options, callback) {
-	redis.llen("longestpoem.verses", function(error, totalVerses) {
-		if (error) return callback({total: 0});
-
-		redis.lrange("longestpoem.verses", options.start, options.start + options.count - 1, function(error, verses) {
-			if (error) return callback({total: 0});
-			
-			callback({
-				total: totalVerses,
-				verses: verses.map(JSON.parse).map(function(tweet) {
-					return {
-						id: tweet.id_str,
-						text: tweet.text,
-						user: tweet.user.screen_name,
-						name: tweet.user.name
-					};
-				})
-			});
-		});
+exports.subscribe = function(callback) {
+	redis.subscribe("longestpoem.verses");
+	redis.on("message", function (channel, message) {
+		if (channel == "longestpoem.verses") {
+			var data = JSON.parse(message);
+			callback(data);
+		}
 	});
 };
 

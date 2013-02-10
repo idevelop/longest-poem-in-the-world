@@ -10,17 +10,6 @@ if (JSON.stringify(config.twitter.auth).indexOf("...") > 0) {
 	process.exit(1);
 }
 
-exports.fetch = function(callback) {
-	// NOTE: take care when changing the search_interval variable
-	// the rate limit in Search API v1.1 is 180 requests / 15 minutes, meaning 1 request every 5 seconds
-
-	setInterval(function() {
-		fetchTweets(callback);
-	}, config.twitter.search_interval * 1000);
-
-	fetchTweets(callback);
-};
-
 exports.stream = function(callback) {
 	// https://dev.twitter.com/docs/api/1.1/post/statuses/filter
 
@@ -55,52 +44,6 @@ exports.stream = function(callback) {
 
 	request.end();
 };
-
-function fetchTweets(callback) {
-	// https://dev.twitter.com/docs/api/1.1/get/search/tweets
-	journal.info("fetching tweets");
-
-	var queryParams = {
-		"lang": "en",
-		"result_type": "recent",
-		"count": "100",
-		"q": config.twitter.search_terms.join(" OR ") // filter for common english words
-	};
-
-	var httpOptions = {
-		hostname: 'api.twitter.com',
-		path: "/1.1/search/tweets.json?" + serializeEncodeObject(queryParams).join("&"),
-		headers: {
-			'user-agent': 'Longest Poem In The World (v1, ' + process.pid + ')',
-			'authorization': generateAuthorizationHeader("get", "http://api.twitter.com/1.1/search/tweets.json", queryParams)
-		}
-	};
-
-	http.get(httpOptions, function(response) {
-		var result = "";
-		
-		response.setEncoding('utf8');
-
-		response.on("data", function(chunk) {
-			result += chunk;
-		});
-
-		response.on("end", function() {
-			if (response.statusCode == 200) {
-				try {
-					var tweets = JSON.parse(result);
-					for (var i = 0; i < tweets.statuses.length; i++) {
-						callback(tweets.statuses[i]);
-					}
-				} catch(e) {
-					journal.error("Twitter API error: " + e);
-				}
-			} else {
-				journal.error("Twitter API error [" + response.statusCode + "]: " + JSON.stringify(response.headers) + ", " + result);
-			}
-		});
-	});
-}
 
 function generateAuthorizationHeader(method, url, queryParams) {
 	// https://dev.twitter.com/docs/auth/authorizing-request
