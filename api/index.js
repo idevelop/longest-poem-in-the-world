@@ -1,8 +1,16 @@
-var http = require('http');
-var url = require("url");
+var app = require('http').createServer(handler);
+var io = require('socket.io').listen(app);
 var poem = require('../engine/poem');
 
-http.createServer(function (request, response) {
+app.listen(3000);
+
+io.sockets.on('connection', function (socket) {
+	poem.subscribe(function(data) {
+		socket.emit("verses", data);
+	});
+});
+
+function handler(request, response) {
 	if (request.method == "GET") {
 		var uri = url.parse(request.url, true);
 
@@ -33,4 +41,4 @@ http.createServer(function (request, response) {
 		response.writeHead(400, {'Content-Type': 'text/plain'});
 		response.end('Method not supported\n');
 	}
-}).listen(3000);
+}

@@ -61,28 +61,15 @@ var ui = {
 	verses: {
 		init: function() {
 			ui.verses.template = $("#verseTemplate").html();
-			ui.verses.streamPosition = 0;
 			ui.verses.perPage = 16;
 
 			// http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 			ui.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
-			$("#more > a").click(function(e) {
-				e.preventDefault();
-				ui.verses.streamPosition += ui.verses.perPage;
-				ui.verses.fetch();
-			});
-
-			ui.verses.fetch();
-		},
-
-		fetch: function(start) {
-			$.getJSON("http://api.longestpoemintheworld.com?start=" + ui.verses.streamPosition + "&count=" + ui.verses.perPage , function(data) {
-				ui.verses.render(data);
-				$("#more").show();
-			}).fail(function() {
-				// fallback to cache
-				ui.verses.fetchCache();
+			ui.verses.socket = io.connect('http://www.longestpoemintheworld.com:3000');
+			ui.verses.socket.on('verses', function (data) {
+				$("#total").html(ui.verses.formatTotal(data.total));
+				ui.verses.push(data.couplet);
 			});
 		},
 
@@ -90,13 +77,11 @@ var ui = {
 			$.getJSON("http://www.longestpoemintheworld.com/cache.json", ui.verses.render);
 		},
 
-		render: function(data) {
-			$("#total").html(ui.verses.formatTotal(data.total));
-
+		push: function(verses) {
 			var versesHtml = '';
-			for (var i = 0; i < data.verses.length; i++) {
-				var text = (ui.isSafari) ? data.verses[i].text : ui.verses.stripEmoji(data.verses[i].text);
-				versesHtml += ui.verses.template.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, text);
+			for (var i = 0; i < verses.length; i++) {
+				var text = (ui.isSafari) ? verses[i].text : ui.verses.stripEmoji(verses[i].text);
+				versesHtml += ui.verses.template.format(verses[i].user, verses[i].id, verses[i].name, text);
 			}
 
 			if ($("#verses li").length === 0) {

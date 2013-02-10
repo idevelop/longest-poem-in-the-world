@@ -95,8 +95,7 @@ exports.subscribe = function(callback) {
 	redis.subscribe("longestpoem.verses");
 	redis.on("message", function (channel, message) {
 		if (channel == "longestpoem.verses") {
-			var data = JSON.parse(message);
-			callback(data);
+			callback(JSON.parse(message));
 		}
 	});
 };
