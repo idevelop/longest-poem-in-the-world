@@ -126,7 +126,7 @@ var ui = {
 		stripEmoji: function(text) {
 			return text.split("").map(function(c) {
 				var charCode = c.charCodeAt(0);
-				return (charCode >= 57344) ? '' : c;
+				return (charCode >= 50000) ? '' : c;
 			}).join("");
 		}
 	},
