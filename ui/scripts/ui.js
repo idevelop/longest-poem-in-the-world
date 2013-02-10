@@ -64,6 +64,9 @@ var ui = {
 			ui.verses.streamPosition = 0;
 			ui.verses.perPage = 16;
 
+			// http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+			ui.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+
 			$("#more > a").click(function(e) {
 				e.preventDefault();
 				ui.verses.streamPosition += ui.verses.perPage;
@@ -92,7 +95,7 @@ var ui = {
 
 			var versesHtml = '';
 			for (var i = 0; i < data.verses.length; i++) {
-				var text = (isSafari()) ? data.verses[i].text : ui.verses.stripEmoji(data.verses[i].text);
+				var text = (ui.isSafari) ? data.verses[i].text : ui.verses.stripEmoji(data.verses[i].text);
 				versesHtml += ui.verses.template.format(data.verses[i].user, data.verses[i].id, data.verses[i].name, text);
 			}
 
@@ -138,11 +141,6 @@ var ui = {
 };
 
 $(ui.init);
-
-// http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-function isSafari() {
-	return Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
-}
 
 // http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
 if (!String.prototype.format) {
