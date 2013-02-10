@@ -60,8 +60,9 @@ exports.getRhymingVerse = function(candidate, callback) {
 	var backlogList = rhymeBacklog[listKey];
 
 	var found = false;
-	for (var i = 0; i < backlogList.length; i++) {
-		var matchingObject = backlogList.splice(i, 1)[0];
+	var length = backlogList.length;
+	for (var i = 0; i < length; i++) {
+		var matchingObject = backlogList.splice(0, 1)[0];
 
 		// do not pair verses that end in the same word, that's just lazy
 		// also, couplets should have roughtly the same number of syllables
@@ -70,13 +71,12 @@ exports.getRhymingVerse = function(candidate, callback) {
 			found = true;
 			break;
 		} else {
+			// we push the match back into the list, at the end
 			backlogList.push(matchingObject);
 		}
 	}
 
-	if (!found) {
-		backlogList.push(candidate);
-	}
+	if (!found) backlogList.push(candidate);
 };
 
 exports.push = function(couplet) {
@@ -92,6 +92,9 @@ exports.push = function(couplet) {
 };
 
 exports.subscribe = function(callback) {
+	// clients interested in the verse stream must subscribe to the pubsub channel
+	// right now this function is being used by the socket.io api
+
 	redis.subscribe("longestpoem.verses");
 	redis.on("message", function (channel, message) {
 		if (channel == "longestpoem.verses") {
