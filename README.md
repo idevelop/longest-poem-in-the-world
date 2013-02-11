@@ -9,7 +9,7 @@ Longest Poem in the World
 
 * The [Twitter Streaming API v1.1](https://dev.twitter.com/docs/api/1.1/post/statuses/filter) is used to fetch tweets in real-time. Out of the tweets coming from the stream it only considers those written in proper English and with a reasonable syllable count. 
 * The [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) is used to obtain phonetical translations of the tweet. For example, `orange` has the phonetical translation `ao1 r ah0 n jh`. Words that rhyme have the same phonetical translation starting with the last accented phoneme. 
-* A backlog of tweet candidates is kept. For each tweet ("candidate") fetched from the stream, it looks in the backlog to see if it can find one that rhymes with it. If yes, it pushes both tweets into the poem's verse stream. If not, the tweet is saved in the backlog, waiting to be paired with a future candidate.
+* A backlog of tweet candidates is kept in memory. For each tweet ("candidate") fetched from the stream, it looks in the backlog to see if it can find one that rhymes with it. If yes, it pushes both tweets into the poem's verse stream. If not, the tweet is saved in the backlog, waiting to be paired with a future candidate.
 * Additional improvements include: ignoring "same word" rhymes, translating numbers into plain text, ignoring smileys, etc.
 
 ## Installation
