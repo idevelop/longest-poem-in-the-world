@@ -48,3 +48,4 @@ To start the API server, run `node api`.
 
 - The "Longest Poem in the World" code is licensed under the MIT License.
 - The [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) is Public Domain.
+- Tweets are property of their respective authors
