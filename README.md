@@ -35,7 +35,7 @@ To start the API server, run `node api`.
 ## Dependencies
 
 * The application requires a running Redis instance.
-* socket.io is used by the API to push the verse stream to the browser in real-time
+* [socket.io](http://socket.io/) is used by the API to push the verse stream to the browser in real-time
 
 ## Author
 
