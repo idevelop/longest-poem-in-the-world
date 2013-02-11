@@ -59,11 +59,13 @@ var ui = {
 	},
 
 	verses: {
+		perPage: 16,
+		pauseStream: false,
+		
 		init: function() {
 			ui.verses.template = $("#verseTemplate").html();
-			ui.verses.perPage = 16;
-			ui.verses.current = 0;
 			ui.verses.container = $("#verses");
+			ui.verses.current = 0;
 
 			// http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 			ui.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
@@ -72,7 +74,14 @@ var ui = {
 				ui.verses.socket = io.connect('http://www.longestpoemintheworld.com:3000');
 				ui.verses.socket.on('verses', function (data) {
 					$("#total").html(ui.verses.formatTotal(data.total));
-					ui.verses.push(data.couplet);
+					if (!ui.verses.pauseStream) ui.verses.push(data.couplet);
+				});
+
+				// pause the stream if mouse is over the verses
+				ui.verses.container.hover(function() {
+					ui.verses.pauseStream = true;
+				}, function() {
+					ui.verses.pauseStream = false;
 				});
 			} else {
 				// api is down
