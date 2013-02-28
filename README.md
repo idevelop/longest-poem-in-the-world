@@ -41,6 +41,7 @@ To start the API server, run `node api`.
 
 **Andrei Gheorghe**
 
+* [About me](http://idevelop.github.com)
 * LinkedIn: [linkedin.com/in/idevelop](http://www.linkedin.com/in/idevelop)
 * Twitter: [@idevelop](http://twitter.com/idevelop)
 
