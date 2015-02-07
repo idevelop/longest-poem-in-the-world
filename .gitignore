@@ -1,6 +1,5 @@
 .DS_Store
 node_modules/
 *.log
-_old/
-nginx.conf
-idevelop.config
+config/private.json
+config/global.json

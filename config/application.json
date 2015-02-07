@@ -11,5 +11,14 @@
 		"search_terms": ["and", "the", "am", "i", "is", "to"]
 	},
 
-	"syllable_limit": 16
+	"parse": {
+		"application_id": "...",
+		"javascript_key": "...",
+		"username": "...",
+		"password": "..."
+	},
+
+	"dictionary": "cmudict/cmudict.json",
+	"syllable_limit": 16,
+	"tweet_storage_limit": 50
 }

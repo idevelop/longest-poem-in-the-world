@@ -1,12 +1,10 @@
-var http = require("http");
 var https = require("https");
 var crypto = require('crypto');
-var journal = require("./journal");
 
 // read config file, containing twitter oauth data and various other preferences
-var config = require("./config").read("app");
+var config = require("./config").read("application");
 if (JSON.stringify(config.twitter.auth).indexOf("...") > 0) {
-	console.log("Please add your Twitter API authorization tokens to `app.config`");
+	console.log("Please add your Twitter API authorization tokens to `application.config`");
 	process.exit(1);
 }
 
@@ -21,44 +19,8 @@ exports.fetch = function(callback) {
 	fetchTweets(callback);
 };
 
-exports.stream = function(callback) {
-	// https://dev.twitter.com/docs/api/1.1/post/statuses/filter
-
-	var queryParams = {
-		"track": config.twitter.search_terms.join(",") // filter for common english words
-	};
-
-	var httpOptions = {
-		hostname: 'stream.twitter.com',
-		path: "/1.1/statuses/filter.json?" + serializeEncodeObject(queryParams).join("&"),
-		headers: {
-			'user-agent': 'Longest Poem In The World (v1, ' + process.pid + ')',
-			'authorization': generateAuthorizationHeader("get", "https://stream.twitter.com/1.1/statuses/filter.json", queryParams)
-		}
-	};
-
-	var request = https.request(httpOptions, function(response) {
-		response.setEncoding('utf8');
-		response.on('data', function(data) {
-			try {
-				var tweet = JSON.parse(data);
-				callback(tweet);
-			} catch (e) {
-				// TODO: parse exception handling
-			}
-		});
-
-		response.on('end', function() {
-			console.log("Twitter stream connection interrupted.");
-		});
-	});
-
-	request.end();
-};
-
 function fetchTweets(callback) {
 	// https://dev.twitter.com/docs/api/1.1/get/search/tweets
-	journal.info("fetching tweets");
 
 	var queryParams = {
 		"lang": "en",
@@ -72,13 +34,13 @@ function fetchTweets(callback) {
 		path: "/1.1/search/tweets.json?" + serializeEncodeObject(queryParams).join("&"),
 		headers: {
 			'user-agent': 'Longest Poem In The World (v1, ' + process.pid + ')',
-			'authorization': generateAuthorizationHeader("get", "http://api.twitter.com/1.1/search/tweets.json", queryParams)
+			'authorization': generateAuthorizationHeader("get", "https://api.twitter.com/1.1/search/tweets.json", queryParams)
 		}
 	};
 
-	http.get(httpOptions, function(response) {
+	https.get(httpOptions, function(response) {
 		var result = "";
-		
+
 		response.setEncoding('utf8');
 
 		response.on("data", function(chunk) {
@@ -90,13 +52,18 @@ function fetchTweets(callback) {
 				try {
 					var tweets = JSON.parse(result);
 					for (var i = 0; i < tweets.statuses.length; i++) {
-						callback(tweets.statuses[i]);
+						callback({
+							id: tweets.statuses[i].id_str,
+							text: tweets.statuses[i].text,
+							author: tweets.statuses[i].user.name,
+							username: tweets.statuses[i].user.screen_name,
+						});
 					}
 				} catch(e) {
-					journal.error("Twitter API error: " + e);
+					console.error("Twitter API error: " + e);
 				}
 			} else {
-				journal.error("Twitter API error [" + response.statusCode + "]: " + JSON.stringify(response.headers) + ", " + result);
+				console.error("Twitter API error [" + response.statusCode + "]: " + JSON.stringify(response.headers) + ", " + result);
 			}
 		});
 	});
@@ -107,7 +74,7 @@ function generateAuthorizationHeader(method, url, queryParams) {
 	// https://dev.twitter.com/docs/auth/creating-signature
 
 	var now = new Date();
-	
+
 	queryParams = queryParams || {};
 
 	var parameterArray = [];
