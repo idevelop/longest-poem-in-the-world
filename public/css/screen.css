@@ -2,6 +2,7 @@ body {
 	background: #abdef5 url(../images/body-bg.png) repeat-x left top;
 	font-family: georgia, cursive;
 	cursor: default;
+	overflow-x: hidden;
 }
 
 a {
