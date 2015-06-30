@@ -6,7 +6,7 @@ var config = require("./config").read("application");
 if (JSON.stringify(config.twitter.auth).indexOf("...") > 0) {
 	console.log("Please add your Twitter API authorization tokens to `application.config`");
 	process.exit(1);
-}
+};
 
 exports.fetch = function(callback) {
 	// NOTE: take care when changing the search_interval variable

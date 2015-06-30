@@ -62,7 +62,7 @@ exports.findTweetThatRhymes = function(tweet, callback) {
 exports.appendTweetsToPoem = function(tweets, callback) {
   if (!isParseSetUp) {
     return callback(false);
-  };
+  }
 
   parseLogin(function(success) {
     if (!success) return;
@@ -74,19 +74,19 @@ exports.appendTweetsToPoem = function(tweets, callback) {
     }).fail(function(error) {
       console.error(error);
     });
-  })
+  });
 };
 
 exports.saveTweetForLater = function(tweet) {
   if (!tweetsByRhyme.hasOwnProperty(tweet.rhyme)) {
     tweetsByRhyme[tweet.rhyme] = [];
-  };
+  }
 
   var length = tweetsByRhyme[tweet.rhyme].push(tweet);
   if (length > config.tweet_storage_limit) {
     tweetsByRhyme[tweet.rhyme] = tweetsByRhyme[tweet.rhyme].slice(-config.tweet_storage_limit);
   }
-}
+};
 
 // --- Private functions --- //
 
@@ -179,7 +179,7 @@ function numberToWords(number) {
     }
   }
 
-  if (number == 0) {
+  if (number === 0) {
     return "zero";
   } else {
     return convert_millions(number);
@@ -193,7 +193,7 @@ function getRhymesForWords(words, callback) {
     if (cmudict.hasOwnProperty(word)) {
       rhymes.push(cmudict[word]);
     }
-  })
+  });
 
   callback(rhymes);
 }
