@@ -1,5 +1,4 @@
-var https = require("https");
-var crypto = require('crypto');
+var Twit = require('twit');
 
 // read config file, containing twitter oauth data and various other preferences
 var config = require("./config").read("application");
@@ -20,93 +19,21 @@ exports.fetch = function(callback) {
 };
 
 function fetchTweets(callback) {
-	// https://dev.twitter.com/docs/api/1.1/get/search/tweets
+	var T = new Twit({
+		consumer_key : config.twitter.auth.consumer_key,
+		consumer_secret : config.twitter.auth.consumer_secret,
+		access_token : config.twitter.auth.access_token,
+		access_token_secret : config.twitter.auth.access_token_secret
+	});
 
-	var queryParams = {
-		"lang": "en",
-		"result_type": "recent",
-		"count": "100",
-		"q": config.twitter.search_terms.join(" OR ") // filter for common english words
-	};
-
-	var httpOptions = {
-		hostname: 'api.twitter.com',
-		path: "/1.1/search/tweets.json?" + serializeEncodeObject(queryParams).join("&"),
-		headers: {
-			'user-agent': 'Longest Poem In The World (v1, ' + process.pid + ')',
-			'authorization': generateAuthorizationHeader("get", "https://api.twitter.com/1.1/search/tweets.json", queryParams)
-		}
-	};
-
-	https.get(httpOptions, function(response) {
-		var result = "";
-
-		response.setEncoding('utf8');
-
-		response.on("data", function(chunk) {
-			result += chunk;
-		});
-
-		response.on("end", function() {
-			if (response.statusCode == 200) {
-				try {
-					var tweets = JSON.parse(result);
-					for (var i = 0; i < tweets.statuses.length; i++) {
-						callback({
-							id: tweets.statuses[i].id_str,
-							text: tweets.statuses[i].text,
-							author: tweets.statuses[i].user.name,
-							username: tweets.statuses[i].user.screen_name,
-						});
-					}
-				} catch(e) {
-					console.error("Twitter API error: " + e);
-				}
-			} else {
-				console.error("Twitter API error [" + response.statusCode + "]: " + JSON.stringify(response.headers) + ", " + result);
-			}
+	var stream = T.stream('statuses/filter', { track: config.twitter.search_terms, langauge:'en' });
+	stream.on('tweet', function (tweet) {
+		// console.log(tweet.text)
+		callback({
+			id: tweet.id_str,
+			text: tweet.text,
+			author: tweet.user.name,
+			username: tweet.user.screen_name,
 		});
 	});
-}
-
-function generateAuthorizationHeader(method, url, queryParams) {
-	// https://dev.twitter.com/docs/auth/authorizing-request
-	// https://dev.twitter.com/docs/auth/creating-signature
-
-	var now = new Date();
-
-	queryParams = queryParams || {};
-
-	var parameterArray = [];
-
-	var oAuthVariables = {
-		oauth_consumer_key: config.twitter.auth.consumer_key,
-		oauth_nonce: now.getTime(),
-		oauth_signature_method: "HMAC-SHA1",
-		oauth_timestamp: Math.floor(now.getTime() / 1000),
-		oauth_token: config.twitter.auth.access_token,
-		oauth_version: "1.0"
-	};
-
-	parameterArray = serializeEncodeObject(oAuthVariables).concat(serializeEncodeObject(queryParams));
-	parameterArray.sort();
-
-	var signatureBaseString = method.toUpperCase() + "&" + encodeURIComponent(url) + "&" + encodeURIComponent(parameterArray.join("&"));
-	var signingKey = encodeURIComponent(config.twitter.auth.consumer_secret) + "&" + encodeURIComponent(config.twitter.auth.access_token_secret);
-
-	oAuthVariables.oauth_signature = crypto.createHmac('sha1', signingKey).update(signatureBaseString).digest("base64");
-
-	var headerArray = [];
-	for (var key in oAuthVariables)
-		headerArray.push(encodeURIComponent(key) + '="' + encodeURIComponent(oAuthVariables[key]) + '"');
-
-	return "OAuth " + headerArray.join(", ");
-}
-
-function serializeEncodeObject(object) {
-	var encodedArray = [];
-	for (var key in object)
-		encodedArray.push(encodeURIComponent(key) + "=" + encodeURIComponent(object[key]));
-
-	return encodedArray;
-}
+} 
