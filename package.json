@@ -9,8 +9,9 @@
 	},
 	"homepage": "http://www.longestpoemintheworld.com",
 	"dependencies": {
-		"parse": "latest",
-		"forever": "latest"
+		"parse": "1.4.1",
+		"forever": "latest",
+		"twit": "latest"
 	},
 	"scripts": {
 		"start": "node ./engine",
