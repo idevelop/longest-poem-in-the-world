@@ -10,7 +10,8 @@
 	"homepage": "http://www.longestpoemintheworld.com",
 	"dependencies": {
 		"parse": "1.4.1",
-		"forever": "latest"
+		"forever": "latest",
+		"twit": "latest"
 	},
 	"scripts": {
 		"start": "node ./engine",
