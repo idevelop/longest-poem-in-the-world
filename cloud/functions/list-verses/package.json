@@ -1,0 +1,7 @@
+{
+  "name": "list-verses",
+  "version": "0.0.1",
+  "dependencies": {
+    "@google-cloud/datastore": "^0.7.0"
+  }
+}

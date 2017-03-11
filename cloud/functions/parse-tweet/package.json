@@ -1,0 +1,8 @@
+{
+  "name": "parse-tweet",
+  "version": "0.0.1",
+  "dependencies": {
+    "@google-cloud/datastore": "^0.7.0",
+    "@google-cloud/pubsub": "^0.7.0"
+  }
+}

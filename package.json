@@ -1,26 +1,16 @@
 {
-	"name" : "longestpoem",
-	"version" : "2.0.0",
-	"description" : "Longest Poem in the World",
-	"author": {
-		"name": "Andrei Gheorghe",
-		"email": "andreig@gmail.com",
-		"url": "http://www.idevelop.ro"
-	},
-	"homepage": "http://www.longestpoemintheworld.com",
-	"dependencies": {
-		"parse": "1.4.1",
-		"forever": "latest",
-		"twit": "latest"
-	},
-	"scripts": {
-		"start": "node ./engine",
-		"start_forever": "./node_modules/forever/bin/forever start -ae error.log ./engine",
-		"stop_forever": "./node_modules/forever/bin/forever stop ./engine"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/idevelop/longest-poem-in-the-world.git"
-	},
-	"license": "MIT"
+  "name": "longestpoem",
+  "version": "3.0.0",
+  "description": "Longest Poem in the World",
+  "author": {
+    "name": "Andrei Gheorghe",
+    "email": "andreig@gmail.com",
+    "url": "http://www.idevelop.ro"
+  },
+  "homepage": "http://www.longestpoemintheworld.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/idevelop/longest-poem-in-the-world.git"
+  },
+  "license": "MIT"
 }

@@ -59,8 +59,9 @@ var ui = {
 	},
 
 	verses: {
+		apiEndpoint: "https://us-central1-longest-poem-in-the-world.cloudfunctions.net/list-verses",
+
 		init: function() {
- 			Parse.initialize("KOilx1x2h0XEDW6G7kbNNwILuvWQpIRCNzC5dIPD", "Trny3PmLIieAPQV79QMiJbP2JKfGoRPl8D3ZERKq");
 			ui.verses.template = $("#verseTemplate").html();
 			ui.verses.streamPosition = 0;
 			ui.verses.perPage = 16;
@@ -74,40 +75,19 @@ var ui = {
 				ui.verses.fetch();
 			});
 
-			var query = new Parse.Query("Tweet");
-			query.count({
-			  success: function(total) {
-					$("#total").html(ui.verses.formatTotal(total));
-			  }
-			});
-
 			ui.verses.fetch();
 		},
 
 		fetch: function(start) {
-			var query = new Parse.Query("Tweet");
-			query.descending("createdAt");
-			query.skip(ui.verses.streamPosition);
-			query.limit(ui.verses.perPage);
-			query.find({
-			  success: function(tweets) {
-			  	var verses = [];
-			  	tweets.map(function(tweet) {
-			  		verses.push({
-			  			id: tweet.get("tweet"),
-			  			text: tweet.get("text"),
-			  			author: tweet.get("author"),
-			  			username: tweet.get("username")
-			  		})
-			  	});
-
-					ui.verses.render(verses);
-					$("#more").show();
-			  },
-			  error: function(object, error) {
-					console.log(error);
-			  }
-			});
+			fetch(ui.verses.apiEndpoint)
+				.then(function(response) {
+					// TODO: check success
+					return response.json().then(function(response) {
+						ui.verses.render(response.verses);
+						$("#total").html(ui.verses.formatTotal(response.total));
+						// $("#more").show();
+					});
+				});
 		},
 
 		render: function(verses) {

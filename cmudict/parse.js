@@ -3,8 +3,7 @@ var fs = require("fs");
 // this script converts the CMU Dictionary stored in cmudict.txt to cmudict.json
 
 var words = fs.readFileSync("cmudict.txt", "utf8").split("\n");
-
-var rhymeMap = {};
+var dictionary = {};
 
 words = words.filter(function(line) {
   var c = line.toLowerCase().charCodeAt(0)
@@ -14,10 +13,10 @@ words = words.filter(function(line) {
   var word = tokens[0].split("(")[0];
   var translation = tokens[1];
 
-  rhymeMap[word.toLowerCase()] = getRelevantPhoneme(translation.toLowerCase());
+  dictionary[word.toLowerCase()] = getRelevantPhoneme(translation.toLowerCase());
 });
 
-fs.writeFileSync("cmudict.json", JSON.stringify(rhymeMap), "utf8");
+fs.writeFileSync("cmudict.json", JSON.stringify(dictionary), "utf8");
 
 console.log("Converted cmudict.txt to cmudict.json.");
 
