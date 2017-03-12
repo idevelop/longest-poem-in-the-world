@@ -75,19 +75,20 @@ var ui = {
 				ui.verses.fetch();
 			});
 
+
 			ui.verses.fetch();
 		},
 
 		fetch: function(start) {
-			fetch(ui.verses.apiEndpoint)
-				.then(function(response) {
-					// TODO: check success
-					return response.json().then(function(response) {
-						ui.verses.render(response.verses);
-						$("#total").html(ui.verses.formatTotal(response.total));
-						// $("#more").show();
-					});
-				});
+			$("#loading").show();
+			$.get(ui.verses.apiEndpoint, function(data) {
+				// TODO: check success
+				ui.verses.render(data.verses);
+				$("#total").html(ui.verses.formatTotal(data.total));
+				$("#loading").hide();
+
+				// $("#more").show();
+			}, "json");
 		},
 
 		render: function(verses) {

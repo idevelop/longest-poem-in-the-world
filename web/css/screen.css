@@ -62,10 +62,10 @@ h1 strong {
 }
 
 #fork {
-	 position: absolute; 
+	 position: absolute;
 	 z-index: 2;
-	 top: 0; 
-	 right: 0; 
+	 top: 0;
+	 right: 0;
 	 border: 0;
 }
 
@@ -78,7 +78,8 @@ h1 strong {
 }
 
 #verses li a,
-#more a {
+#more a,
+#loading {
 	font-size: 18px;
 	font-style: italic;
 	text-decoration: none;
@@ -90,22 +91,22 @@ h1 strong {
 	-moz-border-radius: 14px;
 	border-radius: 14px;
 
-	-moz-transition: all 0.5s; 
-	-webkit-transition: all 0.5s;  
-	-ms-transition: all 0.5s;  
-	-o-transition: all 0.5s;  
-	transition: all 0.5s;  
+	-moz-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-ms-transition: all 0.5s;
+	-o-transition: all 0.5s;
+	transition: all 0.5s;
 
 }
 
 #verses li a .quote {
 	padding: 0 3px;
 	opacity: 0;
-	-moz-transition: all 0.5s; 
-	-webkit-transition: all 0.5s;  
-	-ms-transition: all 0.5s;  
-	-o-transition: all 0.5s;  
-	transition: all 0.5s;  
+	-moz-transition: all 0.5s;
+	-webkit-transition: all 0.5s;
+	-ms-transition: all 0.5s;
+	-o-transition: all 0.5s;
+	transition: all 0.5s;
 }
 
 #verses li a:hover,
@@ -119,13 +120,15 @@ h1 strong {
 	opacity: 1;
 }
 
-#more {
+#more,
+#loading {
 	display: none;
 	text-align: center;
 	margin-top: 18px;
 }
 
-#more a {
+#more a,
+#loading {
 	font-size: 24px;
 	padding: 5px 15px;
 
