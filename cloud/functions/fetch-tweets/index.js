@@ -1,9 +1,7 @@
-var https = require("https");
-var crypto = require("crypto");
-var cmudict;
-
+var Twit = require('twit');
 var pubsub = require('@google-cloud/pubsub')();
 var storage = require('@google-cloud/storage')();
+var cmudict;
 
 exports.fetch = function(req, res) {
   var topic = pubsub.topic('tweets');
@@ -44,97 +42,35 @@ exports.fetch = function(req, res) {
 }
 
 function fetchTweets(credentials, callback) {
-  // https://dev.twitter.com/docs/api/1.1/get/search/tweets
   var searchTerms = ["and", "the", "am", "i", "is", "to"];
-  var queryParams = {
-    "lang": "en",
-    "result_type": "recent",
-    "count": "100",
-    "q": searchTerms.join(" OR ") // filter for common english words
-  };
 
-  var httpOptions = {
-    hostname: 'api.twitter.com',
-    path: "/1.1/search/tweets.json?" + serializeEncodeObject(queryParams).join("&"),
-    headers: {
-      'user-agent': 'Longest Poem In The World (v1, ' + process.pid + ')',
-      'authorization': generateAuthorizationHeader(credentials, "get", "https://api.twitter.com/1.1/search/tweets.json", queryParams)
+  var T = new Twit({
+    consumer_key : credentials.consumer_key,
+    consumer_secret : credentials.consumer_secret,
+    access_token : credentials.access_token,
+    access_token_secret : credentials.access_token_secret
+  });
+
+  T.get('search/tweets', {
+    q: searchTerms.join(" OR "),
+    count: 100,
+    langauge: 'en'
+  }, function(err, data, response) {
+    if (err) {
+      return callback(null, err);
     }
-  };
 
-  https.get(httpOptions, function(response) {
-    var result = "";
-
-    response.setEncoding('utf8');
-
-    response.on("data", function(chunk) {
-      result += chunk;
-    });
-
-    response.on("end", function() {
-      if (response.statusCode == 200) {
-        try {
-          var tweets = JSON.parse(result).statuses.map(function(t) {
-            return {
-              id: t.id_str,
-              text: t.text,
-              author: t.user.name,
-              username: t.user.screen_name,
-            }
-          });
-
-          callback(tweets);
-        } catch(e) {
-          callback(null, "Twitter API error: " + e);
-        }
-      } else {
-        callback(null, "Twitter API error [" + response.statusCode + "]: " + JSON.stringify(response.headers) + ", " + result);
+    var tweets = data.statuses.map(function(t) {
+      return {
+        id: t.id_str,
+        text: t.text,
+        author: t.user.name,
+        username: t.user.screen_name,
       }
     });
+
+    callback(tweets);
   });
-}
-
-function generateAuthorizationHeader(credentials, method, url, queryParams) {
-  // https://dev.twitter.com/docs/auth/authorizing-request
-  // https://dev.twitter.com/docs/auth/creating-signature
-
-  var now = new Date();
-
-  queryParams = queryParams || {};
-
-  var parameterArray = [];
-
-  var oAuthVariables = {
-    oauth_consumer_key: credentials.consumer_key,
-    oauth_nonce: now.getTime(),
-    oauth_signature_method: "HMAC-SHA1",
-    oauth_timestamp: Math.floor(now.getTime() / 1000),
-    oauth_token: credentials.access_token,
-    oauth_version: "1.0"
-  };
-
-  parameterArray = serializeEncodeObject(oAuthVariables).concat(serializeEncodeObject(queryParams));
-  parameterArray.sort();
-
-  var signatureBaseString = method.toUpperCase() + "&" + encodeURIComponent(url) + "&" + encodeURIComponent(parameterArray.join("&"));
-  var signingKey = encodeURIComponent(credentials.consumer_secret) + "&" + encodeURIComponent(credentials.access_token_secret);
-
-  oAuthVariables.oauth_signature = crypto.createHmac('sha1', signingKey).update(signatureBaseString).digest("base64");
-
-  var headerArray = [];
-  for (var key in oAuthVariables)
-    headerArray.push(encodeURIComponent(key) + '="' + encodeURIComponent(oAuthVariables[key]) + '"');
-
-  return "OAuth " + headerArray.join(", ");
-}
-
-function serializeEncodeObject(object) {
-  var encodedArray = [];
-  for (var key in object) {
-    encodedArray.push(encodeURIComponent(key) + "=" + encodeURIComponent(object[key]));
-  }
-
-  return encodedArray;
 }
 
 function hasPotential(tweet) {

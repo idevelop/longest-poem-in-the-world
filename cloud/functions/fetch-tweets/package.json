@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@google-cloud/storage": "^0.7.0",
-    "@google-cloud/pubsub": "^0.7.0"
+    "@google-cloud/pubsub": "^0.7.0",
+    "twit": "latest"
   }
 }
