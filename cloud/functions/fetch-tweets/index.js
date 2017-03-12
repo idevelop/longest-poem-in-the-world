@@ -54,6 +54,7 @@ function fetchTweets(credentials, callback) {
   T.get('search/tweets', {
     q: searchTerms.join(" OR "),
     count: 100,
+    result_type: "recent",
     langauge: 'en'
   }, function(err, data, response) {
     if (err) {
