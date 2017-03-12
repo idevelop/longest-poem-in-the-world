@@ -18,9 +18,9 @@ Longest Poem in the World
 * Create a new Google Cloud Platform project
 * Create a PubSub channel named `tweets`
 * Create 3 cloud functions, one for each of the folders in `cloud/functions`, with the contents of the index.js and the package.json files for each.
-    * `fetch-tweets` uses the Twitter API to fetch tweets, filter to only reasonable candidates, then push each candidate to the `tweets` PubSub channel
-    * `parse-tweet` is called for each new candidate on the PubSub channel and tries to pair it with an older rhyming tweet
-    * `list-verses` is used by the website to list the most recent verses of the poem
+    * `fetch-tweets` is triggered through HTTP and uses the Twitter API to fetch tweets, filter to only reasonable candidates, then push each candidate to the `tweets` PubSub channel
+    * `parse-tweet` is triggered through the `tweets` PubSub channel for each candidate and tries to pair it with an older rhyming tweet
+    * `list-verses` is triggered through HTTP and is used by the website to list the most recent verses of the poem
 * In order for `fetch-tweets` to be able to access the Twitter Search API, you need to provide the necessary API access tokens. Go to [Twitter's developer portal](https://dev.twitter.com/apps), sign in with your Twitter account and create a new application. At the bottom of the app page click the "Create my access token" button, then go to the "OAuth tool" tab and copy the 4 OAuth tokens into the `twitter.json` file in `cloud/storage`. Upload this file into the Google Storage bucket created for your project
 * Set up a cron job to call the `fetch-tweets` function however often you like. I use [UptimeRobot](uptimerobot.com) with a frequency of 5 minutes.
 
