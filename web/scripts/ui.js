@@ -75,7 +75,6 @@ var ui = {
 				ui.verses.fetch();
 			});
 
-
 			ui.verses.fetch();
 		},
 
