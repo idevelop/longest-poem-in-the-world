@@ -1,13 +1,13 @@
 var datastore = require('@google-cloud/datastore')();
 
 exports.list = function(req, res) {
-  var page = req.param("page") || 1;
+  var cursor = req.param("cursor") || null;
   fetchTotal(function(total, totalError) {
     if (totalError) {
       return res.status(500).send(totalError);
     }
 
-    fetchVerses(page, function(verses, versesError) {
+    fetchVerses(cursor, function(versesError, verses, endCursor) {
       if (versesError) {
         return res.status(500).send(versesError);
       }
@@ -21,7 +21,8 @@ exports.list = function(req, res) {
             username: t.username,
             text: t.text
           }
-        })
+        }),
+        cursor: endCursor
       };
 
       res.status(200).set({
@@ -31,20 +32,25 @@ exports.list = function(req, res) {
   });
 };
 
-function fetchVerses(page, callback) {
+function fetchVerses(cursor, callback) {
   var versesPerPage = 16;
 
   var query = datastore.createQuery('Verse');
   query.order('timestamp', {
     descending: true
   });
+
   query.limit(versesPerPage);
 
-  datastore.runQuery(query, function(err, entities) {
+  if (cursor != null) {
+    query.start(cursor);
+  }
+
+  datastore.runQuery(query, function(err, entities, info) {
     if (!err) {
-      callback(entities, null);
+      callback(null, entities, info.endCursor);
     } else {
-      callback(null, err);
+      callback(err);
     }
   });
 }

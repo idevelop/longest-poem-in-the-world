@@ -63,30 +63,33 @@ var ui = {
 
 		init: function() {
 			ui.verses.template = $("#verseTemplate").html();
-			ui.verses.streamPosition = 0;
-			ui.verses.perPage = 16;
 
 			// http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
 			ui.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
 			$("#more > a").click(function(e) {
 				e.preventDefault();
-				ui.verses.streamPosition += ui.verses.perPage;
-				ui.verses.fetch();
+				ui.verses.fetch($("#more").attr("data-cursor"));
 			});
 
 			ui.verses.fetch();
 		},
 
-		fetch: function(start) {
+		fetch: function(cursor) {
 			$("#loading").show();
-			$.get(ui.verses.apiEndpoint, function(data) {
+			$("#more").hide();
+
+			var url = ui.verses.apiEndpoint;
+			if (cursor) {
+				url += "?cursor=" + cursor;
+			}
+
+			$.get(url, function(data) {
 				// TODO: check success
 				ui.verses.render(data.verses);
 				$("#total").html(ui.verses.formatTotal(data.total));
 				$("#loading").hide();
-
-				// $("#more").show();
+				$("#more").attr("data-cursor", encodeURIComponent(data.cursor)).show();
 			}, "json");
 		},
 
